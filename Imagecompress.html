@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #input-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        #output-container {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #compress-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #download-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Compressor Tool</h1>
+    <div id="input-container">
+        <input type="file" id="file-input" accept="image/*">
+        <button id="compress-btn">Compress</button>
+    </div>
+
+    <div id="output-container">
+        <h2>Compressed Image</h2>
+        <img id="compressed-image" src="" alt="Compressed Image">
+        <a id="download-btn" download="compressed-image.jpg">Download</a>
+    </div>
+
+    <script>
+        document.getElementById("compress-btn").addEventListener("click", function () {
+            const input = document.getElementById("file-input");
+            const outputContainer = document.getElementById("output-container");
+            const compressedImage = document.getElementById("compressed-image");
+            const downloadBtn = document.getElementById("download-btn");
+
+            if (input.files.length === 0) {
+                alert("Please select an image file.");
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function () {
+                const img = new Image();
+                img.src = reader.result;
+
+                img.onload = function () {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    const maxWidth = 800;
+                    const maxHeight = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(function (blob) {
+                        const url = URL.createObjectURL(blob);
+                        compressedImage.src = url;
+                        downloadBtn.href = url;
+                        outputContainer.style.display = "block";
+                    }, "image/jpeg", 0.7);
+                };
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

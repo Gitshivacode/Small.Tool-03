@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Recorder Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        #video-container {
+            max-width: 100%;
+        }
+
+        #controls {
+            margin-top: 20px;
+        }
+
+        #record-button, #stop-button, #download-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #record-button:hover, #stop-button:hover, #download-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screen Recorder Tool</h1>
+    <div id="video-container">
+        <video id="recording" controls autoplay></video>
+    </div>
+    <div id="controls">
+        <button id="record-button">Record</button>
+        <button id="stop-button">Stop</button>
+        <a id="download-button" style="display: none;">Download Recording</a>
+    </div>
+
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+    <script>
+        let recorder;
+        let videoStream;
+
+        const recordButton = document.getElementById('record-button');
+        const stopButton = document.getElementById('stop-button');
+        const downloadButton = document.getElementById('download-button');
+        const recordingVideo = document.getElementById('recording');
+
+        recordButton.addEventListener('click', () => {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then(stream => {
+                    videoStream = stream;
+                    recorder = new RecordRTC(stream, {
+                        type: 'video',
+                        mimeType: 'video/webm',
+                    });
+
+                    recorder.startRecording();
+                    recordButton.style.display = 'none';
+                    stopButton.style.display = 'inline-block';
+                })
+                .catch(error => {
+                    console.error('Error accessing screen: ', error);
+                });
+        });
+
+        stopButton.addEventListener('click', () => {
+            recorder.stopRecording(() => {
+                videoStream.getTracks().forEach(track => track.stop());
+                recordingVideo.src = URL.createObjectURL(recorder.getBlob());
+                recordingVideo.style.display = 'inline-block';
+                downloadButton.style.display = 'inline-block';
+            });
+        });
+
+        downloadButton.addEventListener('click', () => {
+            recorder.save('screen-recording.webm');
+        });
+    </script>
+</body>
+</html>

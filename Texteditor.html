@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+a {
+    text-decoration: none;
+    color: #007BFF;
+    margin-top: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Editor</h1>
+        <textarea id="editor" placeholder="Start typing..."></textarea>
+        <button id="save-btn">Save as .txt</button>
+        <a id="download-link" style="display: none;" download="document.txt">Download .txt</a>
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const editor = document.getElementById("editor");
+    const saveButton = document.getElementById("save-btn");
+    const downloadLink = document.getElementById("download-link");
+
+    // Function to save the text as a .txt file
+    function saveTextAsFile() {
+        const text = editor.value;
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        // Set the download link to the generated URL
+        downloadLink.href = url;
+        downloadLink.style.display = "block";
+    }
+
+    saveButton.addEventListener("click", saveTextAsFile);
+});
+
+</script>
+</body>
+</html>
